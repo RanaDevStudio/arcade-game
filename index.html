@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RanaDevStudio | Light Sky Physics Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f0f4f8; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: 20px; }
+        
+        /* Premium Outer Terminal Frame */
+        .terminal-box { background: #ffffff; border: 4px solid #0ea5e9; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(14, 165, 233, 0.15); width: 100%; max-width: 500px; text-align: center; }
+        h2 { color: #0ea5e9; font-size: 24px; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .engine-status { color: #64748b; font-size: 14px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; }
+
+        /* Modern Interactive Canvas Element - 🌟 LIGHT SKY BLUE BACKGROUND */
+        canvas { background: #e0f2fe; border: 3px dashed #0ea5e9; border-radius: 8px; display: block; margin: 0 auto 20px auto; width: 100%; max-width: 440px; height: 260px; }
+
+        /* Hardware Control Panel Modules */
+        .control-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .control-node { background: #f8fafc; padding: 12px; border-radius: 8px; text-align: left; border: 1px solid #e2e8f0; }
+        .control-node label { display: block; font-size: 11px; color: #0ea5e9; margin-bottom: 5px; font-weight: bold; }
+        .control-node input[type="range"] { width: 100%; accent-color: #ff0055; cursor: pointer; }
+
+        /* Multi-Activity Execution Buttons */
+        .btn-strip { display: flex; gap: 10px; }
+        .arcade-btn { flex: 1; padding: 14px; background: #0ea5e9; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .arcade-btn:hover { background: #0284c7; box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3); transform: translateY(-1px); }
+        .arcade-btn.danger { background: #ef4444; color: white; }
+        .arcade-btn.danger:hover { background: #dc2626; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body>
+
+<div class="terminal-box">
+    <h2>⚡ VECTOR BOUNCE ENGINE</h2>
+    <div class="engine-status">Simulation Control Pipeline</div>
+    
+    <!-- 2D Physics Vector Canvas -->
+    <canvas id="physicsCanvas" width="440" height="260"></canvas>
+    
+    <!-- Real-Time Hardware Adjustments -->
+    <div class="control-grid">
+        <div class="control-node">
+            <label>GRAVITY CORE</label>
+            <input type="range" id="gravitySlider" min="0" max="10" value="3">
+        </div>
+        <div class="control-node">
+            <label>BOUNCE IMPACT</label>
+            <input type="range" id="bounceSlider" min="5" max="10" value="8">
+        </div>
+    </div>
+    
+    <!-- Execution Controls -->
+    <div class="btn-strip">
+        <button class="arcade-btn" onclick="injectVectorBall()">Inject Ball</button>
+        <button class="arcade-btn danger" onclick="purgeEngine()">Purge Engine</button>
+    </div>
+</div>
+
+<!-- Advanced Physics Rendering Logic Pipeline -->
+<script>
+    const canvas = document.getElementById('physicsCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let ballsArray = [];
+    
+    class PhysicsBall {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.radius = 14;
+            this.vx = (Math.random() - 0.5) * 8;
+            this.vy = (Math.random() - 0.5) * 8;
+            // Bright Orange/Yellow and Crimson contrast for sky blue
+            this.color = Math.random() > 0.5 ? '#f59e0b' : '#ef4444';
+        }
+        
+        update(gravity, friction) {
+            this.vy += gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+            
+            if (this.x + this.radius > canvas.width) {
+                this.x = canvas.width - this.radius;
+                this.vx = -this.vx * friction;
+            } else if (this.x - this.radius < 0) {
+                this.x = this.radius;
+                this.vx = -this.vx * friction;
+            }
+            
+            if (this.y + this.radius > canvas.height) {
+                this.y = canvas.height - this.radius;
+                this.vy = -this.vy * friction;
+            } else if (this.y - this.radius < 0) {
+                this.y = this.radius;
+                this.vy = -this.vy * friction;
+            }
+        }
+        
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+
+    function injectVectorBall() {
+        ballsArray.push(new PhysicsBall(canvas.width / 2, 40));
+    }
+
+    function purgeEngine() {
+        ballsArray = [];
+    }
+
+    function runPhysicsEngine() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const runtimeGravity = parseFloat(document.getElementById('gravitySlider').value) * 0.05;
+        const runtimeFriction = parseFloat(document.getElementById('bounceSlider').value) * 0.1;
+        
+        ballsArray.forEach(ball => {
+            ball.update(runtimeGravity, runtimeFriction);
+            ball.draw();
+        });
+        
+        requestAnimationFrame(runPhysicsEngine);
+    }
+    
+    runPhysicsEngine();
+</script>
+
+</body>
+</html>
